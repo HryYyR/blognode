@@ -16,17 +16,17 @@ const addSortLabelName = async (data) => {
                 item.sortname = e.name
             }
         });
-        if(item.label.length==1){
+        if(item.label?.length==1){
             labelData.forEach(e => {
                 if(item.label == e.id){
                     item.labelname.push(e.name)
                 }
             })
         }else{
-            item.label = item.label.split(',')
+            item.label = item.label?.split(',')
             // console.log(item.label);
             labelData.forEach(e => {
-                item.label.forEach(el=>{
+                item.label?.forEach(el=>{
                     if(el == e.id){
                         item.labelname.push(e.name)
                     }

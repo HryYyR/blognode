@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@koa/multer": "^3.0.0",
     "@types/node": "^18.0.0",
     "basic-auth": "^2.0.1",
     "cors": "^2.8.5",
@@ -17,8 +18,14 @@
     "jsonwebtoken": "^8.5.1",
     "koa": "^2.13.4",
     "koa-bodyparser": "^4.3.0",
+    "koa-multer": "^1.0.2",
     "koa-router": "^10.1.1",
     "koa-static": "^5.0.0",
-    "node-mysql": "^0.4.2"
+    "multer": "^1.4.5-lts.1",
+    "node-mysql": "^0.4.2",
+    "nodemon": "^2.0.19",
+    "sqlstring": "^2.3.3",
+    "to": "^0.2.9",
+    "update": "^0.7.4"
   }
 }
