@@ -29,7 +29,8 @@ router.post('/login', async (ctx, next) => {
                 token: token,
                 msg: "登录成功！",
                 name: resole[1][0].name,
-                id: resole[1][0].id
+                id: resole[1][0].id,
+                avatar:resole[1][0].avatar,
             }
             console.log(getDate(), '登录成功', resole[1][0].name);
         } else {
