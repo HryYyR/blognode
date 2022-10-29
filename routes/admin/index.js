@@ -81,7 +81,7 @@ router.put('/editblog', async (ctx, next) => {
 
       let sql4 = `update bloglabel set num=num-1 where  id in (${label}) `
       let sql5 = `update blogsort set num=num-1 where  id in (${sort}) `
-      let sql6 = `update bloglabel set num=num+1 where  id in (${label}) `
+      let sql6 = `update bloglabel set num=num+1 where  id in (${req.labellist}) `
       let sql7 = `update blogsort set num=num+1 where  id in (${req.sortID}) `
       let sql8 = `update blog set name="${req.title}",container="${req.container}",sort="${req.sortID}",label="${req.labellist}" where id=${req.id} `
 
@@ -93,7 +93,6 @@ router.put('/editblog', async (ctx, next) => {
         await sqlPromise(sql8),
       ])
       if (resole2[0].affectedRows == 0 && resole2[1].affectedRows == 0 && resole2[2].affectedRows == 0 && resole2[3].affectedRows == 0 && resole2[4].affectedRows == 0) {
-        console.log("no");
         throw "修改失败！"
       }
       console.log(getDate(), "修改博客成功！");

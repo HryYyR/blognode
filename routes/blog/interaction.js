@@ -7,7 +7,6 @@ const fs = require('fs');
 const { queryData } = require('../../ADB/API.js')
 const sqlPromise = require('../../util/promise')   //promise.all封装
 
-
 const getRandomAvatar = require("../../util/getRandomAvatar")  //获取随机头像
 // 添加留言
 router.post('/addinteraction', async (ctx, next) => {
@@ -72,16 +71,19 @@ router.post('/getallinteraction', async (ctx, next) => {
     }
 })
 
+
+
 // 点赞留言
 router.post('/luadinteraction', async (ctx, next) => {
-    ctx.status = 200
-    const req = ctx.request.body
-    console.log(req.interactionid, req.userid);
-    const sql = `select * from interaction where id=${req.interactionid}`
-    const sql2 = `select * from user where id=${req.userid}`
-    const sql3 = `insert into interactionlaud(interactionid,userid,createtime) value(${req.interactionid},${req.userid},'${getDate()}') `
-    const sql4 = ` update interaction set laudnum = laudnum+1 where id=${req.interactionid} `
     try {
+        ctx.status = 200
+        const req = ctx.request.body
+        // console.log(req.interactionid, req.userid);
+        const sql = `select * from interaction where id=${req.interactionid}`
+        const sql2 = `select * from user where id=${req.userid}`
+        const sql3 = `insert into interactionlaud(interactionid,userid,createtime) value(${req.interactionid},${req.userid},'${getDate()}') `
+        const sql4 = ` update interaction set laudnum = laudnum+1 where id=${req.interactionid} `
+
         const resole = await Promise.all(
             [await sqlPromise(sql),
             await sqlPromise(sql2),
@@ -105,9 +107,11 @@ router.post('/luadinteraction', async (ctx, next) => {
     }
 })
 
+
 // 判断用户是否已经点赞
 router.post('/interactionhasBeenLaud', async (ctx, next) => {
     const req = ctx.request.body
+
     const sql = `select * from interactionlaud where userid=${req.userid} and interactionid=${req.interactionid} `
     const res = await queryData(sql)
     if (res.length == 0) {

@@ -4,7 +4,8 @@ var pool = mysql.createPool({
     user: 'root',
     password: 'manager',
     database: 'index',
-    port: 3306
+    port: 3306,
+    charset:'UTF8MB4_UNICODE_CI'
 });
 var query = function (sql, callback) {
     pool.getConnection(function (err, conn) {

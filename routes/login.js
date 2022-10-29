@@ -23,14 +23,15 @@ router.post('/login', async (ctx, next) => {
         const resole = await Promise.all([sqlPromise(sql), sqlPromise(sql2)])
         if (resole[1].length != 0) {
             const token = Token.encrypt({
-                id: reqData.user
+                username: reqData.user,
+                grade: resole[1][0].grade
             }, '1d');
             ctx.body = {
                 token: token,
                 msg: "登录成功！",
                 name: resole[1][0].name,
                 id: resole[1][0].id,
-                avatar:resole[1][0].avatar,
+                avatar: resole[1][0].avatar,
             }
             console.log(getDate(), '登录成功', resole[1][0].name);
         } else {

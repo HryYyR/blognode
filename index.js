@@ -13,6 +13,8 @@ const getDate = require("./util/date.js")    //获取当前时间
 const app = new Koa();
 const router = new Router();
 
+const Token = require('./util/jwt')
+
 const http = "http://localhost:3001/"
 // cors
 app.use(async (ctx, next) => {
@@ -37,8 +39,32 @@ app.use(static(path.join(__dirname + '/img'),  // 开放的文件夹 __dirname�
 ))
 
 app.use(async (ctx, next) => {
+
+  let allowNext = 1  //是否允许放行
+  let authorization = ctx.request.header.authorization
+
+  let url = ctx.request.url
+  if (url.includes('/api/admin') && !url.includes('get')) {
+    let isToken = Token.decrypt(authorization)
+    // console.log(isToken);
+    if (!isToken.token) {
+      allowNext = -1
+      ctx.status == 201
+      ctx.body = {
+        msg: 'token无效'
+      }
+    } else if (isToken.grade != 1) {
+      allowNext = -1
+      ctx.status == 201
+      ctx.body = {
+        msg: '权限不够'
+      }
+    }
+  }
+  allowNext == 1 && await next()
+
   ctx.request.body.ip = ctx.header['x-real-ip'] || '-1'
-  if (ctx.header['x-real-ip']) {
+  if (ctx.request.body.ip) {
     fs.writeFile('./log/visitor_log.txt', `time:${getDate()}   IP:${ctx.header['x-real-ip']}`, (err) => {
       if (err) {
         return console.log(err)
@@ -46,7 +72,6 @@ app.use(async (ctx, next) => {
     })
   }
 
-  await next();
 });
 
 // 获取访问用户ip
