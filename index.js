@@ -103,6 +103,8 @@ router.use('/api', interaction)
 const FriendLink = require('./routes/blog/FriendLink')
 router.use('/api', FriendLink)
 
+const Object = require('./routes/blog/object')
+router.use('/api', Object)
 
 const admin = require('./routes/admin/index.js')
 router.use('/api/admin', admin)

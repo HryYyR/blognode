@@ -1,3 +1,4 @@
+const { throws } = require('assert');
 const jwt = require('jsonwebtoken');
 const {secretKey} = require('../config.js')
 
@@ -21,7 +22,8 @@ const Token = {
         } catch (e) {
             return {
                 token: false,
-                data: e
+                data: 'token无效!',
+                e:e
             }
         }
     }
