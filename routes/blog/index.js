@@ -3,34 +3,45 @@ let router = new Router;
 
 const getDate = require("../../util/date")    //获取当前时间
 
-const { queryData } = require('../../ADB/API.js')
+const { queryData, selectData } = require('../../ADB/API.js')
 const sqlPromise = require('../../util/promise')   //promise.all封装
 
 
 // 前台获取博客数据
 const addSortLabelName = require("../../util/addSortLabel")
 router.get('/getBlogData', async (ctx, next) => {
-  ctx.response.status = 200
-  const sql = 'select name,id,container,createtime,createusername,isTitle,isShow,img,visitnumber,commentnum,laudnum,sort,label from blog '
-  const res = await queryData(sql)
-  if (res.length == 0) {
+  try {
+    ctx.response.status = 200
+    const sql = 'select name,id,container,createtime,createusername,isTitle,isShow,img,visitnumber,commentnum,laudnum,sort,label from blog '
+    const res = await queryData(sql)
+    if (res.length == 0) {
+      throw '博客数据获取失败！'
+      return
+    }
+    // 拿到页码和个数
+    const { pageNum, num } = ctx.request.query
+    if (pageNum == undefined || pageNum == 0 || num == undefined || num == 0) {
+      return ctx.body = res
+    }
+    const resolve = res.slice(num * (pageNum - 1), num * pageNum)
+    const data = await addSortLabelName(resolve)
+    ctx.body = data
+    console.log(getDate(), '前台获取博客数据成功', '分页:', pageNum, '数量:', num);
+  } catch (e) {
     ctx.response.status = 201
     ctx.body = {
-      msg: '博客数据获取失败！'
+      msg: e,
     }
-    return
   }
-  // 拿到页码和个数
-  const { pageNum, num } = ctx.request.query
-  if (pageNum == undefined || pageNum ==0 || num == undefined || num == 0) {
-    return ctx.body = res
-  }
-  const resolve = res.slice(num * (pageNum - 1), num * pageNum)
-  const data = await addSortLabelName(resolve)
-  ctx.body = data
-  console.log(getDate(), '前台获取博客数据成功', '分页:', pageNum, '数量:', num);
 });
 
+
+router.get('/cs', async (ctx, next) => {
+  let res = await selectData('blog', { isTitle: 1 })
+  ctx.body = {
+    data: res
+  }
+})
 
 // 前台获取指定id博客详情数据
 router.post('/getAssignBlogData', async (ctx, next) => {

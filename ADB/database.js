@@ -5,7 +5,7 @@ var pool = mysql.createPool({
     password: 'manager',
     database: 'index',
     port: 3306,
-    charset:'UTF8MB4_UNICODE_CI'
+    charset: 'UTF8MB4_UNICODE_CI'
 });
 var query = function (sql, callback) {
     pool.getConnection(function (err, conn) {
@@ -22,4 +22,5 @@ var query = function (sql, callback) {
         }
     });
 };
+
 module.exports = query;

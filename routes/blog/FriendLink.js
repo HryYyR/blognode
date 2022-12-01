@@ -34,7 +34,7 @@ router.post('/applyFriendLink', async (ctx, next) => {
 // 获取所有友链数据
 router.post('/getFriendLink', async (ctx, next) => {
     ctx.response.status = 200
-    let sql = `select id,name,website,icon,email,container,userid,username,isshow from friendlink`
+    let sql = `select id,name,website,icon,email,container,userid,username,isshow from friendlink where isshow=1`
     try {
         const resolve = await queryData(sql)
         console.log(getDate(), '获取友链数据成功！');

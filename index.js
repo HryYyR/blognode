@@ -19,7 +19,7 @@ const http = "http://localhost:3001/"
 // cors
 app.use(async (ctx, next) => {
   // ctx.set('Access-Control-Allow-Origin', 'http://localhost'); //这个表示任意域名都可以访问，这样写不能携带cookie了。
-  ctx.set('Access-Control-Allow-Origin', 'http://localhost:3000'); //这个表示任意域名都可以访问，这样写不能携带cookie了。
+  ctx.set('Access-Control-Allow-Origin', 'http://localhost:8080'); //这个表示任意域名都可以访问，这样写不能携带cookie了。
   ctx.set('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
   ctx.set('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
   ctx.set('Access-control-Allow-Credentials', 'true');
@@ -39,6 +39,14 @@ app.use(static(path.join(__dirname + '/img'),  // 开放的文件夹 __dirname�
 ))
 
 app.use(async (ctx, next) => {
+  ctx.request.body.ip = ctx.header['x-real-ip'] || '-1'
+  if (ctx.request.body.ip) {
+    fs.writeFile('./log/visitor_log.txt', `time:${getDate()}   IP:${ctx.header['x-real-ip']}`, (err) => {
+      if (err) {
+        return console.log(err)
+      }
+    })
+  }
 
   let allowNext = 1  //是否允许放行
   let authorization = ctx.request.header.authorization
@@ -63,15 +71,6 @@ app.use(async (ctx, next) => {
   }
   allowNext == 1 && await next()
 
-  ctx.request.body.ip = ctx.header['x-real-ip'] || '-1'
-  if (ctx.request.body.ip) {
-    fs.writeFile('./log/visitor_log.txt', `time:${getDate()}   IP:${ctx.header['x-real-ip']}`, (err) => {
-      if (err) {
-        return console.log(err)
-      }
-    })
-  }
-
 });
 
 // 获取访问用户ip
@@ -82,7 +81,7 @@ router.get('/api/getip', async (ctx, next) => {
   } else {
     ctx.status = 201
     ctx.body = {
-      msg: 'ip获取失败！'
+      msg: 'ip获取失败!'
     }
   }
 })
@@ -129,6 +128,9 @@ router.use('/api/admin', admingrade)
 
 const adminrecord = require('./routes/admin/record.js')
 router.use('/api/admin', adminrecord)
+
+const adminfriendlink = require('./routes/admin/friendlink.js')
+router.use('/api/admin', adminfriendlink)
 
 const login = require('./routes/login.js')
 router.use('/api', login)

@@ -5,6 +5,7 @@ const fs = require('fs');
 const { queryData } = require('../ADB/API.js') //常用sql
 const sqlPromise = require('../util/promise')   //promise.all封装
 
+const http = "http://localhost:3001/"
 
 const formidable = require('formidable');  //处理图片
 // 上传图片

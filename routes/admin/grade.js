@@ -9,7 +9,6 @@ const sqlPromise = require('../../util/promise')   //promise.all封装
 
 
 
-
 //后台获取所有权限信息
 router.post('/getGradeData', async (ctx, next) => {
     const sql = `select * from grade `
@@ -26,7 +25,6 @@ router.post('/getGradeData', async (ctx, next) => {
         }
     }
 })
-
 
 
 
