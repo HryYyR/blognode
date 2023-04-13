@@ -1,7 +1,7 @@
 const { queryData } = require('../ADB/API')
 const getDate = require("../util/date")
 const getRecordData = async () => {
-    const sql = `select * from record`
+    const sql = `select * from record order by id desc`
     return await queryData(sql)
 }
 

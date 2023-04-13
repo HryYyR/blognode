@@ -5,6 +5,7 @@ const getDate = require("../../util/date")    //获取当前时间
 
 const { queryData } = require('../../ADB/API.js')
 const sqlPromise = require('../../util/promise')   //promise.all封装
+const SqlString = require('sqlstring');  //防止sql注入
 
 
 // 前台获取指定id博客评论
@@ -37,7 +38,7 @@ router.post('/publishComment', async (ctx, next) => {
   if(userdata.length==0 ){
     throw '获取用户数据失败'
   }
-    const sql = `insert into comment(bloguserid,blogid,container,createtime,blogusername,blogname,avatar) value(${req.userId},${req.blogId},'${req.container}','${getDate()}','${req.userName}','${req.blogName}','${userdata[0].avatar}' ) `
+    const sql = `insert into comment(bloguserid,blogid,container,createtime,blogusername,blogname,avatar) value(${req.userId},${req.blogId},${SqlString.escape(req.container) },'${getDate()}','${req.userName}','${req.blogName}','${userdata[0].avatar}' ) `
     const sql2 = `select * from comment where blogid=${req.blogId}  `
     const sql3 = `update blog set commentnum=commentnum+1 where  id=${req.blogId}`
     try {

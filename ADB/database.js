@@ -2,7 +2,7 @@ var mysql = require('mysql');
 var pool = mysql.createPool({
     host: 'localhost',
     user: 'root',
-    password: 'manager',
+    password: 'root',//以前是manager
     database: 'index',
     port: 3306,
     charset: 'UTF8MB4_UNICODE_CI'

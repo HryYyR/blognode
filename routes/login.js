@@ -27,6 +27,7 @@ router.post('/login', async (ctx, next) => {
             const updateRes = await queryData(sql)
             // console.log(userdata);
             const token = Token.encrypt({
+                userid:userdata[0].id,
                 username: userdata[0].username,
                 grade: userdata[0].grade
             }, '1d');
@@ -100,7 +101,7 @@ router.post('/loginout', async (ctx, next) => {
 router.post('/QQlogin', async (ctx, next) => {
     try {
         let { data, openID, accessToken, ip } = ctx.request.body
-        let id=-1
+        let userid=-1
         // console.log(data, openID, accessToken);
         if (!data || !openID || !accessToken) {
             throw '登陆失败！'
@@ -120,14 +121,14 @@ router.post('/QQlogin', async (ctx, next) => {
             }else{
                 let sql = `select id from user  order by id desc limit 1`
                 let resolve = await queryData(sql)
-                id=resolve[0].id
+                console.log(resolve);
+                userid=resolve[0].id
             }
         }
-
         ctx.body = {
             msg: '登陆成功！',
             data: {
-                id:id,
+                id:userid,
                 name: data.nickname,
                 sex: data.gender,
                 city: data.province + data.city,
@@ -140,9 +141,7 @@ router.post('/QQlogin', async (ctx, next) => {
         ctx.body = {
             msg: '登陆失败！'
         }
-
     }
 })
-
 
 module.exports = router.routes();

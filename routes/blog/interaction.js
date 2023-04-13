@@ -8,6 +8,12 @@ const { queryData } = require('../../ADB/API.js')
 const sqlPromise = require('../../util/promise')   //promise.all封装
 
 const getRandomAvatar = require("../../util/getRandomAvatar")  //获取随机头像
+
+const SqlString = require('sqlstring');  //防止sql注入
+
+
+
+
 // 添加留言
 router.post('/addinteraction', async (ctx, next) => {
     const { userid, username, container, islogin, isreply, replayuserid, userip } = ctx.request.body
@@ -17,7 +23,7 @@ router.post('/addinteraction', async (ctx, next) => {
         userdata = await queryData(getusersql)
         avatar = userdata[0].userdata
     }
-    const insertsql = `insert into interaction(userid,username,userip,container,createtime,islogin,isreply,replyuserid,avatar) values('${userid}','${username}','${userip || ''}','${container}','${getDate()}','${islogin}',${isreply},${replayuserid}, '${avatar || getRandomAvatar()}' )`
+    const insertsql = `insert into interaction(userid,username,userip,container,createtime,islogin,isreply,replyuserid,avatar) values(${SqlString.escape(userid) },'${username}','${userip || ''}',${SqlString.escape(container)},'${getDate()}','${islogin}',${isreply},${replayuserid}, '${avatar || getRandomAvatar()}' )`
     const selectsql = `select * from interaction`
     try {
         const insertresolve = await queryData(insertsql)

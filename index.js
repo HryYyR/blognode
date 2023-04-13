@@ -7,7 +7,7 @@ const Koa = require('koa');
 const Router = require('koa-router')
 const static = require('koa-static')
 const bodyParser = require('koa-bodyparser'); //处理post
-
+const SqlString = require('sqlstring');  //防止sql注入
 const getDate = require("./util/date.js")    //获取当前时间
 
 const app = new Koa();
@@ -40,6 +40,8 @@ app.use(static(path.join(__dirname + '/img'),  // 开放的文件夹 __dirname�
 
 app.use(async (ctx, next) => {
   ctx.request.body.ip = ctx.header['x-real-ip'] || '-1'
+
+  // 添加日志
   if (ctx.request.body.ip) {
     fs.writeFile('./log/visitor_log.txt', `time:${getDate()}   IP:${ctx.header['x-real-ip']}`, (err) => {
       if (err) {
@@ -47,8 +49,22 @@ app.use(async (ctx, next) => {
       }
     })
   }
-
   let allowNext = 1  //是否允许放行
+  // 判断黑名单
+  if (ctx.request.body.ip) {
+    let sql = `select * from blackList where ip=${ctx.request.body.ip}`
+    const data = await queryData(sql)
+    if (data.length > 0) {
+      allowNext = -1
+      ctx.status == 205
+      ctx.body = {
+        msg: '爬',
+        data: data[0]
+      }
+    }
+  }
+
+
   let authorization = ctx.request.header.authorization
 
   let url = ctx.request.url
@@ -86,6 +102,36 @@ router.get('/api/getip', async (ctx, next) => {
   }
 })
 
+// 添加黑名单
+router.post('/api/setIpBlackList', async (ctx, next) => {
+  try {
+    const { ip, type } = ctx.request.body.info
+    if (ip!='null') {
+      const sql = `select ip from blacklist where ip= ${ip} `
+      const resolve = await queryData(sql)
+      if (resolve.length >= 1) {
+        const UPDATESQL = `update blacklist set ip = ip+1 where ip = ${ip}`
+        await queryData(UPDATESQL)
+      } else {
+        const INSERTSQL = `insert into blackList(ip,type,createtime,number) values(${ip},${type},${getDate()},1) `
+        await queryData(INSERTSQL)
+        console.log(`添加ip:${ip} 到黑名单成功！`);
+      }
+      console.log(ip, type);
+    }
+
+    ctx.body = {
+      data: "success",
+    }
+
+  } catch (e) {
+    ctx.status = 201
+    ctx.body = {
+      data: "error"
+    }
+  }
+})
+
 
 const blog = require('./routes/blog/index')
 router.use('/api', blog)
@@ -104,6 +150,9 @@ router.use('/api', FriendLink)
 
 const Object = require('./routes/blog/object')
 router.use('/api', Object)
+
+const User = require('./routes/blog/user')
+router.use('/api', User)
 
 const admin = require('./routes/admin/index.js')
 router.use('/api/admin', admin)
@@ -141,7 +190,8 @@ router.use('/api', rigister)
 const verifyToken = require('./routes/verifyToken.js')
 router.use('/api', verifyToken)
 
-const File = require('./routes/File.js')
+const File = require('./routes/File.js');
+const { queryData } = require('./ADB/API.js');
 router.use('/api', File)
 
 

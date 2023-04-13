@@ -16,7 +16,8 @@ const Token = {
             let data = jwt.verify(token, secretKey);
             return {
                 token: true,
-                id: data.username,
+                id: data.userid,
+                name:data.username,
                 grade:data.grade
             };
         } catch (e) {
